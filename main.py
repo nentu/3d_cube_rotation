@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
-from draw_utils import draw_cube
+from draw_utils import draw_model
+from cube import Cube
 
 
 def get_intrinsic_matrix(angle_x, angle_y, w, h):
@@ -27,35 +28,26 @@ if __name__ == "__main__":
     intrinsic_matrix = get_intrinsic_matrix(*camera_angle, *plane_shape)
     # print(angle_coordinates)
 
-    angle_coordinates = np.array(
-        [
-            [r, r, r],
-            [-r, r, r],
-            [-r, -r, r],
-            [r, -r, r],
-            [r, r, -r],
-            [-r, r, -r],
-            [-r, -r, -r],
-            [r, -r, -r],
-        ]
-    ).astype(np.float32)
-
-    angle_coordinates[:, 2] += 400
+    x_shift = 0
 
     while True:
+        cube = Cube(r)
+
+        cube.vertex_list[:, 2] += 400
         plane = np.zeros(shape=(*plane_shape, 3))
 
         # plane += 255
 
         # draw_point(plane, plane_shape / 2)
-        draw_cube(
-            plane, [project_point(intrinsic_matrix, i) for i in angle_coordinates]
-        )
+        cube.vertex_list[:, 0] += x_shift
+
+        cube.apply_tranform(intrinsic_matrix)
+        draw_model(plane, cube)
 
         cv2.imshow("res", plane)
         if cv2.waitKey(1) == ord("q"):
             break
 
-        angle_coordinates[:, 0] += 0.1
+        x_shift += 0.1
 
     cv2.destroyAllWindows()
