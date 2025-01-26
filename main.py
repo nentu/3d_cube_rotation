@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 from draw_utils import draw_model
 from cube import Cube
+from scipy.spatial.transform import Rotation
 
 
 def get_intrinsic_matrix(angle_x, angle_y, w, h):
@@ -28,10 +29,17 @@ if __name__ == "__main__":
     intrinsic_matrix = get_intrinsic_matrix(*camera_angle, *plane_shape)
     # print(angle_coordinates)
 
-    x_shift = 0
+    shift = 0
+    rotation = 1
 
     while True:
         cube = Cube(r)
+
+        matrix = Rotation.from_euler(
+            "zx", [rotation, rotation * 0.5], degrees=True
+        ).as_matrix()
+
+        cube.vertex_list = cube.vertex_list.dot(matrix)
 
         cube.vertex_list[:, 2] += 400
         plane = np.zeros(shape=(*plane_shape, 3))
@@ -39,7 +47,7 @@ if __name__ == "__main__":
         # plane += 255
 
         # draw_point(plane, plane_shape / 2)
-        cube.vertex_list[:, 0] += x_shift
+        cube.vertex_list[:, 0] += shift
 
         cube.apply_tranform(intrinsic_matrix)
         draw_model(plane, cube)
@@ -48,6 +56,7 @@ if __name__ == "__main__":
         if cv2.waitKey(1) == ord("q"):
             break
 
-        x_shift += 0.1
+        shift += 0
+        rotation += 0.2
 
     cv2.destroyAllWindows()

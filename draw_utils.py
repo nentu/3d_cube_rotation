@@ -13,7 +13,11 @@ def draw_line(img, p1, p2):
 
 def draw_model(plane, model: Model):
     for p1_idx, p2_idx in model.edges_list_id:
-        assert model.vertex_list[p1_idx][2] == 1 and model.vertex_list[p2_idx][2] == 1
+        assert (
+            abs(model.vertex_list[p1_idx][2]) == 1
+            and abs(model.vertex_list[p2_idx][2]) == 1
+        )
+
         draw_line(plane, model.vertex_list[p1_idx][:2], model.vertex_list[p2_idx][:2])
 
     for i in model.vertex_list:

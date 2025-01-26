@@ -10,6 +10,9 @@ def _gen_edge_seq():
         res.append([i, i + 4])
     for i in range(4):  # vertical lines
         res.append([i, (i + 1) % 4])
+    for i in range(8):  # vertical lines
+        res.append([i, 8])
+
     return np.array(res)
 
 
@@ -49,6 +52,7 @@ def _get_cube(r):
             [-r, r, -r],
             [-r, -r, -r],
             [r, -r, -r],
+            [0, 0, 0],
         ]
     ).astype(np.float32)
 
